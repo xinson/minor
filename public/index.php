@@ -10,7 +10,7 @@ require '../vendor/autoload.php';
 require '../app/common/function.php';
 
 // 加载路由
-require '../app/config/router.php';
+require '../app/common/router.php';
 
 try {
 	App\Framework\Router::dicpatch();
