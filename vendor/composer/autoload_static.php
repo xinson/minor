@@ -6,25 +6,16 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitbc8a4d83b0ebae5971bfd77c9f18782f
 {
-    public static $prefixLengthsPsr4 = array (
-        'N' => 
-        array (
-            'NoahBuscher\\Macaw\\' => 18,
-        ),
-    );
-
-    public static $prefixDirsPsr4 = array (
-        'NoahBuscher\\Macaw\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/noahbuscher/macaw',
-        ),
+    public static $classMap = array (
+        'App\\Controllers\\demo' => __DIR__ . '/../..' . '/app/controllers/demo.php',
+        'App\\Framework\\Router' => __DIR__ . '/../..' . '/framework/Router.php',
+        'minor\\framework\\Config' => __DIR__ . '/../..' . '/framework/Config.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitbc8a4d83b0ebae5971bfd77c9f18782f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitbc8a4d83b0ebae5971bfd77c9f18782f::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitbc8a4d83b0ebae5971bfd77c9f18782f::$classMap;
 
         }, null, ClassLoader::class);
     }

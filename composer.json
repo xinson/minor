@@ -1,5 +1,9 @@
 {
-  "require": {
-    "noahbuscher/macaw": "dev-master"
+  "require": {},
+  "autoload": {
+    "classmap": [
+      "app",
+      "framework"
+    ]
   }
 }

@@ -1,7 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2016/12/27
- * Time: 10:33
- */
+use App\Framework\Router;
+
+Router::get('/', 'App\Controllers\demo@index');
+Router::get('/test.html', 'App\Controllers\demo@test');
+Router::get('/view/(:num)', 'App\Controllers\demo@view');
+/*Router::get('/(:any)', function($slug) {
+	echo 'The slug is: ' . $slug;
+});*/
+Router::post('/login.html', 'App\Controllers\demo@login');

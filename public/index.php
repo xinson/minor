@@ -9,8 +9,11 @@ require '../vendor/autoload.php';
 // 加载函数库
 require '../app/common/function.php';
 
-use \NoahBuscher\Macaw\Macaw;
+// 加载路由
+require '../app/config/router.php';
 
-Macaw::get('/', 'Controllers\demo@index');
-
-Macaw::dispatch();
+try {
+	App\Framework\Router::dicpatch();
+}catch (\Exception $e){
+	echo $e->getMessage();exit();
+}
