@@ -3,7 +3,6 @@ namespace App\Framework;
 
 class Model
 {
-	public static $instance = null;
 	public $pdo;
 
 	public function __construct()
@@ -15,43 +14,58 @@ class Model
 		$this->pdo = new \PDO($dsn, $username, $passwd, $options);
 	}
 
-	public function setData(){
+	public function setData()
+	{
 
 	}
 
-	public function getData(){
+	public function getData()
+	{
 
 	}
 
-	public function setTable(){
+	public function setTable()
+	{
 
 	}
 
-	public function getPrimary(){
+	public function getPrimary()
+	{
 
 	}
 
-	public function setPrimary(){
+	public function setPrimary()
+	{
 
 	}
 
-	public function find(){
+	public function find()
+	{
 
 	}
 
-	public function findAndWhere(){
+	public function findAndWhere()
+	{
 
 	}
 
-	public function save(){
+	public function getList()
+	{
 
 	}
 
-	public function delete(){
+	public function save()
+	{
 
 	}
 
-	public function query(){
+	public function delete()
+	{
+
+	}
+
+	public function query()
+	{
 
 	}
 

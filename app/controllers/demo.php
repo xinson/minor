@@ -1,10 +1,14 @@
 <?php
 namespace App\Controllers;
 
+use App\Framework\Application;
+
 class demo
 {
     public function index()
     {
+		$configObj = Application::getShare('config');
+		print_r($configObj->get());
         echo '1111';
     }
 
