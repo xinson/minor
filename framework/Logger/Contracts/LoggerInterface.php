@@ -1,5 +1,5 @@
 <?php
-namespace App\Framework\Contracts;
+namespace App\Framework\Logger\Contracts;
 
 interface LoggerInterface
 {

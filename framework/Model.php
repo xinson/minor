@@ -3,15 +3,13 @@ namespace App\Framework;
 
 class Model
 {
-	public $pdo;
+	protected $pdo;
+	protected $data = array();
 
 	public function __construct()
 	{
-		$dsn = '';
-		$username = '';
-		$passwd = '';
-		$options = '';
-		$this->pdo = new \PDO($dsn, $username, $passwd, $options);
+		$pdo = new MysqlPdo();
+		$this->pdo = $pdo->getInstance();
 	}
 
 	public function setData()
@@ -65,6 +63,11 @@ class Model
 	}
 
 	public function query()
+	{
+
+	}
+
+	public function __destruct()
 	{
 
 	}

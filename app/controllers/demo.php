@@ -2,14 +2,17 @@
 namespace App\Controllers;
 
 use App\Framework\Application;
+use App\Framework\Config;
+use App\Framework\Model;
 
 class demo
 {
     public function index()
     {
-		$configObj = Application::getShare('config');
-		print_r($configObj->get());
-        echo '1111';
+    	/** @var Config $config */
+		//$config = Application::getShare('config');
+		//$data = $config->get('config');
+		$demo = new Model();
     }
 
 	public function test()

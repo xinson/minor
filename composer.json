@@ -1,5 +1,7 @@
 {
-  "require": {},
+  "require": {
+    "phake/phake": "2.*"
+  },
   "autoload": {
     "classmap": [
       "app",
