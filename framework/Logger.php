@@ -36,11 +36,17 @@ class Logger implements LoggerInterface
 
     protected $channel;
 
-    protected $handlers = array();
+    protected $handlers;
 
-    public function __construct($channel)
+    protected $handlerkey;
+
+    protected $processors;
+
+    public function __construct($channel, $handlers = array(), $processors = array())
     {
         $this->channel = $channel;
+        $this->handlers = $handlers;
+        $this->processors = $processors;
     }
 
     /**
@@ -76,8 +82,8 @@ class Logger implements LoggerInterface
     {
         $this->handlers = array();
         if (is_array($handlers)) {
-            foreach (array_reverse($handlers) as $d => $v) {
-                $this->pushHandler($v);
+            foreach (array_reverse($handlers) as $handler) {
+                $this->pushHandler($handler);
             }
         }
         return $this;
@@ -92,11 +98,112 @@ class Logger implements LoggerInterface
         return $this->handlers;
     }
 
+    /**
+     * 添加处理
+     * @param $callback
+     * @return $this
+     */
+    public function pushProcessor($callback)
+    {
+        if(empty($this->processors)){
+            throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method),'.var_export($callback, true).' given.');
+        }
+        array_unshift($this->processors,$callback);
+        return $this;
+    }
+
+    /**
+     * 删除处理
+     * @return mixed
+     */
+    public function popProcessor()
+    {
+        if(empty($this->processors)){
+            throw new \InvalidArgumentException('You tried to pop from an empty processor stack.');
+        }
+        return array_shift($this->processors);
+    }
+
+    /**
+     * 返回处理
+     * @return array
+     */
+    public function getProcessors()
+    {
+        return $this->processors;
+    }
+
+    /**
+     * 添加到记录
+     * @param integer $level
+     * @param $message
+     * @param array $context
+     */
     public function addRecord($level, $message, array $context = array())
     {
-        if(empty($this->handlers)){
-
+        $this->handlerkey = null;
+        if(is_array($this->handlers)){
+            foreach ($this->handlers as $key => $handler){
+                if($handler->isHandling(array('level' => $level))){
+                    $this->handlerkey = $key;
+                }
+                break;
+            }
         }
+
+        if(null === $this->handlerkey){
+            return false;
+        }
+
+        $levelName = self::$levels[$level];
+        $recordData = array(
+            'message' => $message,
+            'context' => $context,
+            'level' => $level,
+            'level_name' => $levelName,
+            'channel' => $this->channel,
+            'datetime' => time(),
+            'extra' => []
+        );
+
+        if(is_array($this->processors)) {
+            foreach ($this->processors as $processor) {
+                $record = call_user_func($processor, $recordData);
+            }
+        }
+
+        reset($this->handlers);
+        while ($this->handlers = key($this->handlers)){
+            next($this->handlers);
+        }
+
+        while($handler = current($this->handlers)){
+            if(true == $handler->handle($record)){
+                break;
+            }
+
+            next($this->handlers);
+        }
+
+    }
+
+    /**
+     * 验证hand
+     * @param $level
+     * @return bool
+     */
+    protected function isHandling($level)
+    {
+        $record = array('level' => $level);
+
+        if(empty($this->handlers)){
+            foreach ($this->handlers as $handler){
+                if($handler->isHandling($record)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 

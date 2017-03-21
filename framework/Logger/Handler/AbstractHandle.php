@@ -17,11 +17,21 @@ abstract class AbstractHandler
         $this->level = $level;
     }
 
+    /**
+     * 判断是否当前的handle
+     * @param array $record
+     * @return int
+     */
     public function isHandling(array $record)
     {
         return $record['level'] = $this->level;
     }
 
+    /**
+     * 操作
+     * @param array $record
+     * @return bool
+     */
     public function handle(array $record)
     {
         if(!$this->isHandling($record)){
@@ -35,9 +45,15 @@ abstract class AbstractHandler
 
     }
 
+
+    /**
+     * Process 处理
+     * @param $record
+     * @return mixed
+     */
     public function processRecord($record)
     {
-        if($this->process){
+        if($this->processors){
             if(is_array($record)){
                 foreach ($record as $process){
                     $record = call_user_func($process,  $record);
@@ -47,6 +63,11 @@ abstract class AbstractHandler
         return $record;
     }
 
+    /**
+     * 添加处理
+     * @param $callback
+     * @return $this
+     */
     public function pushProcess($callback)
     {
         if(!is_callable($callback)){
@@ -57,6 +78,10 @@ abstract class AbstractHandler
         return $this;
     }
 
+    /**
+     * 删除处理
+     * @return mixed
+     */
     public function popProcessor()
     {
         if(!$this->processors){
@@ -68,12 +93,21 @@ abstract class AbstractHandler
 
     abstract public function write(array $record);
 
+    /**
+     * 设置格式
+     * @param $formatter
+     * @return $this
+     */
     public function setFormatter($formatter)
     {
         $this->formatter = $formatter;
         return $this;
     }
 
+    /**
+     * 获取格式
+     * @return LineFormatter
+     */
     public function getFormatter()
     {
         if(!$this->formatter){
@@ -82,8 +116,7 @@ abstract class AbstractHandler
         return $this->formatter;
     }
 
-    public function close()
-    {}
+    public function close(){}
 
     public function __destruct()
     {
