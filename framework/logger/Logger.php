@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Framework;
-
-use App\Framework\Logger\Contracts\LoggerInterface;
+namespace App\Framework\Logger;
 
 class Logger implements LoggerInterface
 {

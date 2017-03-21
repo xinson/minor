@@ -1,6 +1,6 @@
 <?php
 return array(
-    'host' => '127.0.0.1',
+    'host' => 'localhost',
     'database' => 'minor',
     'username' => 'root',
     'password' => '123456',
