@@ -14,9 +14,9 @@ class MysqlPdo
         $MysqlConfig = $configObj->get('config');
         $dbConfig = $MysqlConfig['mysql'];
         if (!empty($dbConfig)) {
-            $dsn = 'mysql:dbname=' . $dbConfig['database'] . ';host=' . $dbConfig['username'] . ';port=' . $dbConfig['port'] . '';
+            $dsn = 'mysql:dbname=' . $dbConfig['database'] . ';host=' . $dbConfig['host'] . ';port=' . $dbConfig['port'] . '';
             try {
-                $this->pdo = new \PDO($dsn, $dbConfig['username'], $dbConfig['password']);
+                $this->pdo = new \PDO("$dsn", $dbConfig['username'], $dbConfig['password']);
             } catch (\PDOException $exception) {
                 //记录错误
                 //$exception->errorInfo;

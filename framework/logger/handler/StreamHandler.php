@@ -1,7 +1,7 @@
 <?php
 namespace App\Framework\Logger\Handler;
 
-class StreamHandle extends AbstractHandler
+class StreamHandler extends AbstractHandler
 {
     protected $stream;
     protected $url;
@@ -9,7 +9,13 @@ class StreamHandle extends AbstractHandler
     protected $dirCreated;
     protected $errorMessage;
 
-    public function __construct($stream, $useLock = false, $level = \App\Framework\Logger::DEBUG)
+    /**
+     * StreamHandler constructor.
+     * @param int $stream
+     * @param int $level
+     * @param bool $useLock
+     */
+    public function __construct($stream, $level = \App\Framework\Logger\Logger::DEBUG,  $useLock = false)
     {
         parent::__construct($level);
         if (is_resource($stream)) {
@@ -22,6 +28,10 @@ class StreamHandle extends AbstractHandler
         $this->useLock = $useLock;
     }
 
+    /**
+     * 写操作
+     * @param array $record
+     */
     public function write(array $record)
     {
         if (!is_resource($this->stream)) {
@@ -48,6 +58,11 @@ class StreamHandle extends AbstractHandler
         }
     }
 
+    /**
+     * 获取目录
+     * @param $stream
+     * @return null|string
+     */
     private function getDirFromStream($stream)
     {
         $pos = strpos($stream, '://');
@@ -58,11 +73,12 @@ class StreamHandle extends AbstractHandler
         if ('file://' == substr($stream, 0, 7)) {
             return dirname(substr($stream, 7));
         }
-
-
         return null;
     }
 
+    /**
+     * 创建目录
+     */
     protected function createDir()
     {
         if ($this->dirCreated) {

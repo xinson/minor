@@ -12,7 +12,7 @@ abstract class AbstractHandler
     protected $processors = array();
 
 
-    public function __construct($level = \App\Framework\Logger::DEBUG)
+    public function __construct($level = \App\Framework\Logger\Logger::DEBUG)
     {
         $this->level = $level;
     }

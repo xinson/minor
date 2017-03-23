@@ -2,6 +2,8 @@
 namespace App\Framework;
 
 use App\Framework\Container;
+use App\Framework\Logger\Logger;
+use App\Framework\Logger\Handler\StreamHandler;
 
 class Application
 {
@@ -32,6 +34,14 @@ class Application
         $container->bind('config', $configObj);
         $config = $container->make('config', array('config'));
         $this->setShare('config', $config);
+
+        //日志操作类
+        $log = new Logger('local');
+        $log->pushHandler(new StreamHandler(PATH . '/storage/log/minor.log', Logger::WARNING));
+        $container->bind('logger', $log);
+        $logger = $container->make('logger', array('logger'));
+        $this->setShare('logger', $logger);
+
     }
 
     /**

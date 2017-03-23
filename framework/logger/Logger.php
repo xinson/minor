@@ -2,6 +2,7 @@
 
 namespace App\Framework\Logger;
 
+
 class Logger implements LoggerInterface
 {
 
@@ -36,8 +37,6 @@ class Logger implements LoggerInterface
 
     protected $handlers;
 
-    protected $handlerkey;
-
     protected $processors;
 
     public function __construct($channel, $handlers = array(), $processors = array())
@@ -55,7 +54,6 @@ class Logger implements LoggerInterface
     public function pushHandler($handler)
     {
         array_unshift($this->handlers, $handler);
-
         return $this;
     }
 
@@ -103,10 +101,10 @@ class Logger implements LoggerInterface
      */
     public function pushProcessor($callback)
     {
-        if(empty($this->processors)){
-            throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method),'.var_export($callback, true).' given.');
+        if (empty($this->processors)) {
+            throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method),' . var_export($callback, true) . ' given.');
         }
-        array_unshift($this->processors,$callback);
+        array_unshift($this->processors, $callback);
         return $this;
     }
 
@@ -116,7 +114,7 @@ class Logger implements LoggerInterface
      */
     public function popProcessor()
     {
-        if(empty($this->processors)){
+        if (empty($this->processors)) {
             throw new \InvalidArgumentException('You tried to pop from an empty processor stack.');
         }
         return array_shift($this->processors);
@@ -139,49 +137,51 @@ class Logger implements LoggerInterface
      */
     public function addRecord($level, $message, array $context = array())
     {
-        $this->handlerkey = null;
-        if(is_array($this->handlers)){
-            foreach ($this->handlers as $key => $handler){
+        $handlerkey = null;
+        if (is_array($this->handlers)) {
+            reset($this->handlers);
+            foreach ($this->handlers as $handler){
                 if($handler->isHandling(array('level' => $level))){
-                    $this->handlerkey = $key;
+                    $handlerkey = key($this->handlers);
                 }
                 break;
             }
         }
 
-        if(null === $this->handlerkey){
+        if (null === $handlerkey) {
             return false;
         }
 
         $levelName = self::$levels[$level];
-        $recordData = array(
+
+        $record = array(
             'message' => $message,
             'context' => $context,
             'level' => $level,
             'level_name' => $levelName,
             'channel' => $this->channel,
-            'datetime' => time(),
+            'datetime' => date('Y-m-d H:i:s',time()),
             'extra' => []
         );
 
+        //处理process
         if(is_array($this->processors)) {
             foreach ($this->processors as $processor) {
-                $record = call_user_func($processor, $recordData);
+                $record = call_user_func($processor, $record);
             }
         }
 
-        reset($this->handlers);
-        while ($this->handlers = key($this->handlers)){
-            next($this->handlers);
-        }
-
-        while($handler = current($this->handlers)){
-            if(true == $handler->handle($record)){
-                break;
+        //处理handler
+        if(is_array($this->handlers)) {
+            foreach ($this->handlers as $handler){
+                if (true === $handler->handle($record)) {
+                    break;
+                }
+                next($this->handlers);
             }
-
-            next($this->handlers);
         }
+
+        return true;
 
     }
 
@@ -194,9 +194,9 @@ class Logger implements LoggerInterface
     {
         $record = array('level' => $level);
 
-        if(empty($this->handlers)){
-            foreach ($this->handlers as $handler){
-                if($handler->isHandling($record)){
+        if (empty($this->handlers)) {
+            foreach ($this->handlers as $handler) {
+                if ($handler->isHandling($record)) {
                     return true;
                 }
             }
@@ -207,46 +207,44 @@ class Logger implements LoggerInterface
 
     public function emergency($message, array $context = array())
     {
-
+        $this->addRecord(static::EMERGENCY, $message, $context);
     }
 
     public function alert($message, array $context = array())
     {
-
+        $this->addRecord(static::ALERT, $message, $context);
     }
 
     public function critical($message, array $context = array())
     {
-
+        $this->addRecord(static::CRITICAL, $message, $context);
     }
 
     public function error($message, array $context = array())
     {
-
+        $this->addRecord(static::ERROR, $message, $context);
     }
 
     public function warning($message, array $context = array())
     {
-
+        $this->addRecord(static::WARNING, $message, $context);
     }
 
     public function notice($message, array $context = array())
     {
-
+        $this->addRecord(static::NOTICE, $message, $context);
     }
 
     public function info($message, array $context = array())
     {
-
+        $this->addRecord(static::INFO, $message, $context);
     }
 
     public function debug($message, array $context = array())
     {
-
+        $this->addRecord(static::DEBUG, $message, $context);
     }
 
-    public function write($level, $message, array $context = array())
-    {
-
-    }
+    public function log($level, $message, array $context = array())
+    {}
 }

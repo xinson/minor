@@ -9,24 +9,33 @@ class demo
 {
     public function index()
     {
-    	/** @var Config $config */
-		//$config = Application::getShare('config');
-		//$data = $config->get('config');
-		$demo = new Model();
+        /** @var Config $config */
+        //$config = Application::getShare('config');
+        //$data = $config->get('config');
+        $demo = new Model();
+
+        /*
+        $log = Application::getShare('logger');
+        $log->warning('Foo');
+        $log->error('Bar');
+        */
+
+
     }
 
-	public function test()
-	{
-		echo 'test';
-	}
+    public function test()
+    {
+        echo 'test';
+    }
 
-	public function view($id){
-		echo $id;
-	}
+    public function view($id)
+    {
+        echo $id;
+    }
 
-	public function login()
-	{
+    public function login()
+    {
 
-	}
+    }
 
 }
