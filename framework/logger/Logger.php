@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Framework\Logger;
-
 
 class Logger implements LoggerInterface
 {
