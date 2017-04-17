@@ -7,19 +7,25 @@ class BladeCompiler extends Compiler
 
     public $cachePath;
 
-    public function __construct()
-    {
 
-    }
 
     public function isExpired()
     {
 
     }
 
-    public function compiler()
+    public function compiler($path = null)
     {
-        // TODO: Implement compiler() method.
+        if($path){
+            $this->setPath($path);
+        }
+
+        $contents = $this->compilerString($this->file->get($this->getPath()));
+
+        if(!is_null($this->cachePath)){
+            $this->file->put($this->getCompiledPath($path),$contents);
+        }
+
     }
 
 
