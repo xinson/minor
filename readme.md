@@ -40,7 +40,9 @@ get/post为method请求的方式，也支持put和delete。第一个参数为请
 
    
 ## 视图设置
-   
+
+在控制器使用
+   
      $path = [PATH.'/app/templates'];// 视图文件目录，这是数组，可以有多个目录
      $cachePath = PATH.'/storage/framework/cache';// 编译文件缓存目录
      $compiler = new \App\Framework\View\Compiler\BladeCompiler($cachePath);
