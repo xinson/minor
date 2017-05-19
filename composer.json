@@ -1,7 +1,6 @@
 {
   "require": {
-    "phake/phake": "2.*",
-    "xiaoler/blade": "0.3.*"
+    "phake/phake": "2.*"
   },
   "autoload": {
     "classmap": [
