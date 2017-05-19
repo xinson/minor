@@ -54,7 +54,7 @@ get/post为method请求的方式，也支持put和delete。第一个参数为请
      // 实例化 Factory
      $factory = new \App\Framework\View\Factory($engine, $finder);
      // 渲染视图并输出
-     echo $factory->make('index', ['a' => 1, 'b' => array(0 => 1)])->render();
+     echo $factory->make('index', ['a' => 1, 'b' => array(0 => 1)])->render();
 
-    
-    
+## 模型
+    
