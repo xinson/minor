@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Framework\View;
 
-use App\Framework\View\Engines\EngineInterface;
+use InvalidArgumentException;
 use App\Framework\View\ViewFinderInterface;
-use App\Framework\View\View;
-
+use App\Framework\View\Engines\EngineInterface;
 
 class Factory
 {
@@ -108,7 +108,6 @@ class Factory
     {
         $result = '';
         if (count($data) > 0) {
-
             foreach ($data as $key => $value) {
                 $data = ['key' => $key, $iterator => $value];
 

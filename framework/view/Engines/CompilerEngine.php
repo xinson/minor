@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Framework\View\Engines;
 
 use ErrorException;
+use App\Framework\View\Compilers\CompilerInterface;
 
 class CompilerEngine extends PhpEngine
 {
@@ -10,7 +12,7 @@ class CompilerEngine extends PhpEngine
 
     protected $lastCompiled = [];
 
-    public function __construct($compiler)
+    public function __construct(CompilerInterface $compiler)
     {
         $this->compiler = $compiler;
     }
@@ -24,6 +26,7 @@ class CompilerEngine extends PhpEngine
         }
 
         $compiled = $this->compiler->getCompiledPath($path);
+
         $results = $this->evaluatePath($compiled, $data);
 
         array_pop($this->lastCompiled);

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Framework\View\Engines;
 
 interface EngineInterface

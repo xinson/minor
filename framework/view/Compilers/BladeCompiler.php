@@ -1,15 +1,12 @@
 <?php
-namespace App\Framework\View\Compiler;
+namespace App\Framework\View\Compilers;
 
-class BladeCompiler extends Compiler
+class BladeCompiler extends Compiler implements CompilerInterface
 {
-    protected $cachePath;
+
+    protected $customDirectives = [];
 
     protected $path;
-
-    protected $forelseCounter = 0;
-
-    protected $footer = [];
 
     protected $compilers = [
         'Statements',
@@ -17,77 +14,82 @@ class BladeCompiler extends Compiler
         'Echos',
     ];
 
-    protected $rawTags = ['{!!','!!}'];
+    protected $rawTags = ['{!!', '!!}'];
 
-    protected $contentTags = ['{{','}}'];
+    protected $contentTags = ['{{', '}}'];
 
-    protected $escapedTags = ['{{{','}}}'];
+    protected $escapedTags = ['{{{', '}}}'];
 
-    protected $customDirectives = [];
+    protected $echoFormat = 'e(%s)';
+
+    protected $footer = [];
+
+    protected $forelseCounter = 0;
+
+    public function compile($path = null)
+    {
+        if ($path) {
+            $this->setPath($path);
+    }
+
+        $contents = $this->compileString($this->files->get($this->getPath()));
+
+        if (!is_null($this->cachePath)) {
+            $this->files->put($this->getCompiledPath($this->getPath()), $contents);
+        }
+    }
+
+    public function getPath()
+    {
+        return $this->path;
+    }
 
     public function setPath($path)
     {
         $this->path = $path;
     }
 
-    public function getPath(){
-        return $this->path;
-    }
-
-    public function compiler($path = null)
-    {
-        if($path){
-            $this->setPath($path);
-        }
-
-        $contents = $this->compilerString($this->getFile($this->getPath()));
-
-        if(!is_null($this->cachePath)){
-            $this->setFile($this->getCompiledPath($path),$contents);
-        }
-
-    }
-
-    public function compilerString($value)
+    public function compileString($value)
     {
         $result = '';
+
         $this->footer = [];
 
-        foreach (token_get_all($value) as $tokon){
-            $result .= is_array($tokon)?$this->parseTokon($tokon):$tokon;
+        foreach (token_get_all($value) as $token) {
+            $result .= is_array($token) ? $this->parseToken($token) : $token;
         }
 
-        if(count($this->footer) > 0){
-            $result = ltrim($result, PHP_EOL).PHP_EOL.implode(PHP_EOL,array_reverse($this->footer));
+        if (count($this->footer) > 0) {
+            $result = ltrim($result, PHP_EOL)
+                    .PHP_EOL.implode(PHP_EOL, array_reverse($this->footer));
         }
 
         return $result;
     }
 
-    public function parseTokon($token)
+    protected function parseToken($token)
     {
         list($id, $content) = $token;
 
-        if($id == T_INLINE_HTML){
-            foreach ($this->compilers as $type){
+        if ($id == T_INLINE_HTML) {
+            foreach ($this->compilers as $type) {
                 $content = $this->{"compile{$type}"}($content);
             }
         }
+
         return $content;
     }
 
-
     protected function compileComments($value)
     {
-        $pattern = sprintf('/%s--((.|\s)*?)--%s/',$this->contentTags[0], $this->contentTags[1]);
+        $pattern = sprintf('/%s--((.|\s)*?)--%s/', $this->contentTags[0], $this->contentTags[1]);
 
-        return preg_replace($pattern,'<?php /*$1*/ ?>',$value);
+        return preg_replace($pattern, '<?php /*$1*/ ?>', $value);
     }
 
     protected function compileEchos($value)
     {
-        foreach($this->getEchoMethods() as $method => $lenght)
-        {
+        foreach ($this->getEchoMethods() as $method => $length) {
             $value = $this->$method($value);
         }
 
@@ -103,18 +105,18 @@ class BladeCompiler extends Compiler
         ];
 
         uksort($methods, function ($method1, $method2) use ($methods) {
-            if($methods[$method1] > $methods[$method2]){
+            // Ensure the longest tags are processed first
+            if ($methods[$method1] > $methods[$method2]) {
                 return -1;
             }
-
-            if($methods[$method1] < $methods[$method2]){
+            if ($methods[$method1] < $methods[$method2]) {
                 return 1;
             }
 
+            // Otherwise give preference to raw tags (assuming they've overridden)
             if ($method1 === 'compileRawEchos') {
                 return -1;
             }
-
             if ($method2 === 'compileRawEchos') {
                 return 1;
             }
@@ -122,7 +124,6 @@ class BladeCompiler extends Compiler
             if ($method1 === 'compileEscapedEchos') {
                 return -1;
             }
-
             if ($method2 === 'compileEscapedEchos') {
                 return 1;
             }
@@ -133,21 +134,21 @@ class BladeCompiler extends Compiler
 
     protected function compileStatements($value)
     {
-        $callback = function ($match){
-            $expression = isset($match[3])?$match[3]:$match[3];
+        $callback = function ($match) {
+            $expression = isset($match[3]) ? $match[3] : $match;
 
-            if(strpos($match[1],'@') !== false){
+            if (strpos($match[1], '@') !== false) {
                 $match[0] = isset($match[3]) ? $match[1].$match[3] : $match[1];
             } elseif (isset($this->customDirectives[$match[1]])) {
                 $match[0] = call_user_func($this->customDirectives[$match[1]], $expression);
             } elseif (method_exists($this, $method = 'compile'.ucfirst($match[1]))) {
                 $match[0] = $this->$method($expression);
             }
+
             return isset($match[3]) ? $match[0] : $match[0].$match[2];
         };
 
         return preg_replace_callback('/\B@(@?\w+)([ \t]*)(\( ( (?>[^()]+) | (?3) )* \))?/x', $callback, $value);
-
     }
 
     protected function compileRawEchos($value)
@@ -178,7 +179,6 @@ class BladeCompiler extends Compiler
         return preg_replace_callback($pattern, $callback, $value);
     }
 
-
     protected function compileEscapedEchos($value)
     {
         $pattern = sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->escapedTags[0], $this->escapedTags[1]);
@@ -191,7 +191,6 @@ class BladeCompiler extends Compiler
 
         return preg_replace_callback($pattern, $callback, $value);
     }
-
 
     public function compileEchoDefaults($value)
     {
@@ -248,7 +247,6 @@ class BladeCompiler extends Compiler
         return '<?php endif; ?>';
     }
 
-
     protected function compileElse($expression)
     {
         return '<?php else: ?>';
@@ -278,7 +276,6 @@ class BladeCompiler extends Compiler
     {
         return $expression ? "<?php if{$expression} break; ?>" : '<?php break; ?>';
     }
-
 
     protected function compileContinue($expression)
     {
@@ -311,7 +308,6 @@ class BladeCompiler extends Compiler
     {
         return "<?php elseif{$expression}: ?>";
     }
-
 
     protected function compileEmpty($expression)
     {
@@ -387,7 +383,6 @@ class BladeCompiler extends Compiler
         return '<?php $__env->appendSection(); ?>';
     }
 
-
     public function directive($name, callable $handler)
     {
         $this->customDirectives[$name] = $handler;
@@ -403,4 +398,42 @@ class BladeCompiler extends Compiler
         return $this->rawTags;
     }
 
+    public function setRawTags($openTag, $closeTag)
+    {
+        $this->rawTags = [preg_quote($openTag), preg_quote($closeTag)];
+    }
+
+    public function setContentTags($openTag, $closeTag, $escaped = false)
+    {
+        $property = ($escaped === true) ? 'escapedTags' : 'contentTags';
+
+        $this->{$property} = [preg_quote($openTag), preg_quote($closeTag)];
+    }
+
+    public function setEscapedContentTags($openTag, $closeTag)
+    {
+        $this->setContentTags($openTag, $closeTag, true);
+    }
+
+    public function getContentTags()
+    {
+        return $this->getTags();
+    }
+
+    public function getEscapedContentTags()
+    {
+        return $this->getTags(true);
+    }
+
+    protected function getTags($escaped = false)
+    {
+        $tags = $escaped ? $this->escapedTags : $this->contentTags;
+
+        return array_map('stripcslashes', $tags);
+    }
+
+    public function setEchoFormat($format)
+    {
+        $this->echoFormat = $format;
+    }
 }

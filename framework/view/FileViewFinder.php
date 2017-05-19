@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Framework\View;
 
 use InvalidArgumentException;
 
 class FileViewFinder implements ViewFinderInterface
 {
+
+    protected $files;
 
     protected $paths;
 
@@ -16,6 +19,7 @@ class FileViewFinder implements ViewFinderInterface
 
     public function __construct(array $paths, array $extensions = null)
     {
+        $this->files = new Filesystem;
         $this->paths = $paths;
 
         if (isset($extensions)) {
@@ -62,7 +66,7 @@ class FileViewFinder implements ViewFinderInterface
     {
         foreach ((array) $paths as $path) {
             foreach ($this->getPossibleViewFiles($name) as $file) {
-                if (file_exists($viewPath = $path.'/'.$file)) {
+                if ($this->files->exists($viewPath = $path.'/'.$file)) {
                     return $viewPath;
                 }
             }
@@ -118,6 +122,11 @@ class FileViewFinder implements ViewFinderInterface
     public function hasHintInformation($name)
     {
         return strpos($name, static::HINT_PATH_DELIMITER) > 0;
+    }
+
+    public function getFilesystem()
+    {
+        return $this->files;
     }
 
     public function getPaths()

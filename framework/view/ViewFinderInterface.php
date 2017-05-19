@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Framework\View;
 
 interface ViewFinderInterface
 {
+
     const HINT_PATH_DELIMITER = '::';
 
     public function find($view);

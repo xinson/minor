@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Framework\View\Engines;
 
 class PhpEngine implements EngineInterface
 {
-
     public function get($path, array $data = [])
     {
         return $this->evaluatePath($path, $data);
