@@ -3,7 +3,7 @@ namespace App\Framework\View\Compiler;
 
 abstract class Compiler
 {
-    public $cachePath;
+    protected $cachePath;
 
     public function __construct($cachePath)
     {

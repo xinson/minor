@@ -28,6 +28,12 @@ class View implements \ArrayAccess{
     public function render(callable $callback = null)
     {
         $contents = $this->renderContents();
+
+        $response = isset($callback)?call_user_func($callback,$this,$contents):null;
+
+        $this->factory->flushSectionsIfDoneRendering();
+
+        return !is_null($response)?$response:$contents;
     }
 
     public function renderContents()
@@ -44,7 +50,7 @@ class View implements \ArrayAccess{
 
     public function getContents()
     {
-        return $this->engine->get($this->path, $this->getContents());
+        return $this->engine->get($this->path, $this->gatherData());
     }
 
     public function whth($key, $value)

@@ -9,10 +9,9 @@ interface ViewFinderInterface
 
     public function addLocation($location);
 
-    public function addNamespace($namespace,$hints);
+    public function addNamespace($namespace, $hints);
 
     public function prependNamespace($namespace, $hints);
 
     public function addExtension($extension);
-
 }
