@@ -38,3 +38,23 @@ get/post为method请求的方式，也支持put和delete。第一个参数为请
     CRITICAL：关键错误，像应用中的组件不可用。
     ALETR：需要立即采取措施的错误，像整个网站挂掉了，数据库不可用。这个时候触发器会通过SMS通知你，
 
+   
+## 视图设置
+   
+     $path = [PATH.'/app/templates'];// 视图文件目录，这是数组，可以有多个目录
+     $cachePath = PATH.'/storage/framework/cache';// 编译文件缓存目录
+     $compiler = new \App\Framework\View\Compiler\BladeCompiler($cachePath);
+      $compiler->directive('datetime', function($timestamp) {
+         return preg_replace('/(\(\d+\))/', '<?php echo date("Y-m-d H:i:s", $1); ?>', $timestamp);
+      });
+     $engine = new \App\Framework\View\Engines\CompilerEngine($compiler);
+     $finder = new \App\Framework\View\FileViewFinder($path);
+     // 如果需要添加自定义的文件扩展，使用以下方法
+     $finder->addExtension('tpl');
+     // 实例化 Factory
+     $factory = new \App\Framework\View\Factory($engine, $finder);
+     // 渲染视图并输出
+     echo $factory->make('index', ['a' => 1, 'b' => array(0 => 1)])->render();
+
+## 模型
+    
