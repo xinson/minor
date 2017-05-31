@@ -23,7 +23,7 @@ class MysqlPdo
         if (!empty($dbConfig)) {
             $dsn = 'mysql:dbname=' . $dbConfig['database'] . ';host=' . $dbConfig['host'] . ';port=' . $dbConfig['port'] . '';
             try {
-                $this->dbh = new \PDO("$dsn", $dbConfig['username'], $dbConfig['password']);
+                $this->dbh = new PDO("$dsn", $dbConfig['username'], $dbConfig['password']);
             } catch (PDOException $exception) {
                 //记录错误
                 $this->log->alert($exception->errorInfo.$exception->getMessage());
