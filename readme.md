@@ -9,7 +9,11 @@ minor轻量框架使用composer作自动加载，加swoole来实现php的多线�
     openssl
     PDO
     PDO/Mysql
-    
+
+## 框架根目录执行composer update（composer按照官方教程安装）
+
+## 使用composer做自动加载，新添加类需执行composer update
+    
 ## 路由设置（文件 app\common\router.php）
 
     Router::get('/', 'App\Controllers\demo@index');
