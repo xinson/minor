@@ -8,7 +8,7 @@ class Model
 {
     protected $pdo;
     protected $table;
-    protected $primaryKey;
+    protected $primaryKey = 'id';
     protected $exists;
     protected $original = array();
     protected $data = array();
@@ -43,9 +43,13 @@ class Model
         return $this;
     }
 
-    public function getPrimary($primaryKey)
+    public function getTable(){
+        return $this->table;
+    }
+
+    public function getPrimary()
     {
-        return $this->primaryKey = $primaryKey;
+        return $this->primaryKey;
     }
 
     public function setPrimary($primaryKey)
@@ -59,20 +63,37 @@ class Model
         if(!empty($id)) {
             $sql = " SELECT * FROM {$this->getTable()} WHERE {$this->getPrimary()} = :{$this->getPrimary()} ";
             $array = $this->pdo->query($sql, array($this->getPrimary() => $id));
-            if(!empty($array) && !is_array($array)){
-                foreach ($array as $d => $v){
+            if(!empty($array[0]) && is_array($array[0])){
+                foreach ($array[0] as $d => $v){
                     $this->setData($d,$v);
                 }
                 $this->exists = true;
                 $this->original = $this->getData();
             }
         }
-        return $this->getData();
+        return $this;
     }
 
-    public function findAndWhere()
+    public function findAndWhere($where, $bind = array())
     {
-
+        $whereSql = '';
+        if(is_array($where)){
+            foreach ($where as $k => $v){
+                $whereSql .= ' and '.$k;
+            }
+        }else{
+            $whereSql = $where;
+        }
+        $sql = " SELECT * FROM {$this->getTable()} WHERE $whereSql ";
+        $array = $this->pdo->query($sql,$bind);
+        if(!empty($array[0]) && is_array($array[0])){
+            foreach ($array[0] as $d => $v){
+                $this->setData($d,$v);
+            }
+            $this->exists = $array;
+            $this->original = $this->getData();
+        }
+        return $this;
     }
 
     public function getList()
@@ -97,7 +118,11 @@ class Model
 
     public function __destruct()
     {
-
+        $this->data = array();
+        $this->exists = '';
+        $this->original = array();
+        $this->pdo = '';
+        $this->table = '';
     }
 
 }

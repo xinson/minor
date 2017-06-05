@@ -16,8 +16,7 @@ class MysqlPdo
     public function __construct()
     {
         $configObj = Application::getShare('config');
-        $MysqlConfig = $configObj->get('config');
-        $dbConfig = $MysqlConfig['mysql'];
+        $dbConfig = $configObj->get('mysql');
         /** @var Logger $log */
         $this->log = Application::getShare('logger');
         if (!empty($dbConfig)) {

@@ -3,7 +3,8 @@ namespace App\Controllers;
 
 use App\Framework\Application;
 use App\Framework\Config;
-use App\Framework\Model;
+use App\Models\News;
+use App\Framework\Db\MysqlPdo;
 
 
 class demo
@@ -20,6 +21,11 @@ class demo
         $log->warning('Foo');
         $log->error('Bar');
         */
+
+        $new = new News();
+        $new->findAndWhere("id = :id and ",array('id'=>1));
+        print_r($new->getData());exit();
+
 
         $view= Application::getShare('view');
         // 渲染视图并输出
