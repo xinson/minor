@@ -23,13 +23,24 @@ class demo
         */
 
         $new = new News();
-        $new->findAndWhere("id = :id and ",array('id'=>1));
-        print_r($new->getData());exit();
+        //$new->findAndWhere('name = :name', array('name' => 'name4'));
+        $new->find(1);
+        //$new->name = 'test11';
+        print_r($new->getData());
+        exit();
 
+
+        //$new->findAndWhere(array('id' => 1, 'name' => ':name'),array('name'=>'test'));
+        //print_r($new->getData());exit();
+        /*
+        $list = $new->getList();
+        echo '<pre>';
+        print_r($list);exit();
+        */
 
         $view= Application::getShare('view');
         // 渲染视图并输出
-        echo $view->make('index', ['a' => 1, 'b' => 2])->render();
+        echo $view->make('index', ['list' => array()])->render();
 
     }
 

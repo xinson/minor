@@ -1,6 +1,7 @@
 {
   "require": {
-    "phake/phake": "2.*"
+    "phake/phake": "2.*",
+    "chrisboulton/php-resque": "1.2.*"
   },
   "autoload": {
     "classmap": [

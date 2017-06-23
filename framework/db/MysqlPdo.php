@@ -42,7 +42,7 @@ class MysqlPdo
         $rs = $stmt->execute();
         if($rs==FALSE){
             $this->log->alert($stmt->errorInfo());
-            return false;
+            return $stmt->errorInfo();
         }
         $lastId = $this->dbh->lastInsertId();
         if(!$lastId==0){
@@ -62,9 +62,25 @@ class MysqlPdo
         $rs = $stmt->execute();
         if($rs==FALSE){
             $this->log->alert($stmt->errorInfo());
-            return false;
+            return $stmt->errorInfo();
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function update($sql, array $data = array())
+    {
+        $stmt = $this->dbh->prepare($sql);
+        if(!empty($data)){
+            foreach ($data as $key => $val){
+                $stmt->bindParam(':'.$key,$val);
+            }
+        }
+        $rs = $stmt->execute();
+        if($rs==FALSE){
+            $this->log->alert($stmt->errorInfo());
+            return $stmt->errorInfo();
+        }
+        return $stmt->columnCount();
     }
 
 }

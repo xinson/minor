@@ -6,4 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Resque' => array($vendorDir . '/chrisboulton/php-resque/lib'),
+    'Phake' => array($vendorDir . '/phake/phake/src'),
 );

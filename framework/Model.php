@@ -58,10 +58,19 @@ class Model
         return $this;
     }
 
+    public function getId()
+    {
+        return $this->getData($this->getPrimary());
+    }
+
+    /**
+     * @param $id
+     * @return $this
+     */
     public function find($id)
     {
         if(!empty($id)) {
-            $sql = " SELECT * FROM {$this->getTable()} WHERE {$this->getPrimary()} = :{$this->getPrimary()} ";
+            $sql = " SELECT * FROM {$this->getTable()} WHERE {$this->getPrimary()} = :{$this->getPrimary()}  LIMIT 1";
             $array = $this->pdo->query($sql, array($this->getPrimary() => $id));
             if(!empty($array[0]) && is_array($array[0])){
                 foreach ($array[0] as $d => $v){
@@ -74,17 +83,29 @@ class Model
         return $this;
     }
 
+    /**
+     * @param $where
+     * @param array $bind
+     * @return $this
+     *
+     * findAndWhere(array('name' => ':name'), array('name' => 'test'))
+     * findAndWhere(array('name' => ':name', 'id' => 1), array('name' => 'test'))
+     * findAndWhere('name = :name', array('name' => 'test'))
+     * findAndWhere('name = :name and id = 3', array('name' => 'test'))
+     */
     public function findAndWhere($where, $bind = array())
     {
-        $whereSql = '';
-        if(is_array($where)){
-            foreach ($where as $k => $v){
-                $whereSql .= ' and '.$k;
+        $whereSql = ' 1 ';
+        if(!empty($where)) {
+            if (is_array($where)) {
+                foreach ($where as $k => $v) {
+                    $whereSql .= ' and ' . $k . ' = ' . $v;
+                }
+            } else {
+                $whereSql = $where;
             }
-        }else{
-            $whereSql = $where;
         }
-        $sql = " SELECT * FROM {$this->getTable()} WHERE $whereSql ";
+        $sql = " SELECT * FROM {$this->getTable()} WHERE $whereSql LIMIT 1";
         $array = $this->pdo->query($sql,$bind);
         if(!empty($array[0]) && is_array($array[0])){
             foreach ($array[0] as $d => $v){
@@ -96,14 +117,69 @@ class Model
         return $this;
     }
 
-    public function getList()
+    /**
+     * @param string $where
+     * @param array $bind
+     * @param string $order
+     * @param int $limit
+     * @return array|bool
+     */
+    public function getList($where = '', $bind = array(),  $order = '', $limit = 10)
     {
-
+        $whereSql = ' 1 ';
+        if(!empty($where)) {
+            if (is_array($where)) {
+                foreach ($where as $k => $v) {
+                    $whereSql .= ' and ' . $k . ' = ' . $v;
+                }
+            } else {
+                $whereSql = $where;
+            }
+        }
+        $sql = " SELECT * FROM {$this->getTable()} WHERE $whereSql";
+        if(!empty($order)){
+            $sql .= " ORDER BY $order";
+        }
+        $sql .= " LIMIT  $limit";
+        $array = $this->pdo->query($sql,$bind);
+        return $array;
     }
 
+    /**
+     * @return array|bool
+     */
     public function save()
     {
-
+        $data = $this->getData();
+        if(!empty($this->exists)){
+            $different = array();
+            $bind = array();
+            foreach ($data as $d => $v){
+                if(array_key_exists($d,$this->original)) {
+                    //查找update的数据 是否有更新
+                    if ($this->original[$d]!=$v && !strcmp((string)$this->original[$d],(string)$v) !== 0){
+                        $different[$d] = $v;
+                        $bind[$d] = $d.' = :'.$d;
+                    }
+                }
+            }
+            if(!empty($different) && is_array($different)){
+                $where = $this->getPrimary() .' = '.$this->getId();
+                $fields = implode(',', $bind);
+                $sql = "UPDATE {$this->getTable()} SET $fields WHERE $where";
+                return $this->pdo->update($sql,$different);
+            }else{
+                return false;
+            }
+        } else {
+            if (!empty($data) && is_array($data)) {
+                $fieldKeys= array_keys($data);
+                $field = implode(',', $fieldKeys);
+                $values = ':' . implode(',:', $fieldKeys);
+                $sql = "INSERT INTO {$this->getTable()} ({$field}) VALUES ({$values})";
+                $this->pdo->insert($sql, $this->getData());
+            }
+        }
     }
 
     public function delete()
@@ -111,9 +187,15 @@ class Model
 
     }
 
-    public function query()
+    public function __set($key, $value)
     {
+        $this->setData($key,$value);
+        return $this;
+    }
 
+    public function __get($key)
+    {
+        return $this->getData($key);
     }
 
     public function __destruct()
