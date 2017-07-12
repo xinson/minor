@@ -1,5 +1,17 @@
 {
+    "name": "xinson/minor",
+    "description": "Minor framework",
+    "license": "MIT",
+    "keywords": ["Minor framework"],
+    "version": "1.0.0",
+   "authors": [
+        {
+        "name": "xinson"
+        }
+    ],
+
   "require": {
+    "php": ">=5.3.0",
     "phake/phake": "2.*",
     "chrisboulton/php-resque": "1.2.*"
   },
