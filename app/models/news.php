@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Framework\Model;
+use Minor\Framework\Model;
 
 class News extends Model
 {

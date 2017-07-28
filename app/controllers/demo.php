@@ -1,10 +1,10 @@
 <?php
 namespace App\Controllers;
 
-use App\Framework\Application;
-use App\Framework\Config;
+use Minor\Framework\Application;
+use Minor\Framework\Config;
 use App\Models\News;
-use App\Framework\Db\MysqlPdo;
+use Minor\Framework\Db\MysqlPdo;
 
 
 class demo

@@ -1,5 +1,5 @@
 <?php
-use App\Framework\Router;
+use Minor\Framework\Router;
 
 Router::get('/', 'App\Controllers\demo@index');
 Router::get('/test.html', 'App\Controllers\demo@test');
