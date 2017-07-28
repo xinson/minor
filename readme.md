@@ -53,4 +53,37 @@ get/post为method请求的方式，也支持put和delete。第一个参数为请
 
 
 ## 模型
+
+在 \app\models 新加php文件继承Model类 如 News.php
+
+      namespace App\Models;
+      use App\Framework\Model;
+      class News extends Model
+      {
+          protected  $table = 'news';
+      }
     
+使用方法
+   
+     $new = new News();
+     $new->find(2);//查询 参数为ID
+     $new->findAndWhere('name = :name', array('name' => 'test'));//查询 键值
+     $new->findAndWhere(array('content' => ':content'), array('content' => 'content2'));//查询 键值
+     $new->getData();//获取查询的结果
+     
+     //修改或者添加
+     $new->find(2);
+     $new->setData('name','name10');
+     $new->save();
+     
+     //删除
+     $new->find(2);
+     $new->delete();
+     
+     //获取列表
+     $new->getList(" name = :name ",array('name' => 'name1'),' order by id asc', '10');
+     
+     
+   
+     
+   
