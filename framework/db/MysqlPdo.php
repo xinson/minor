@@ -36,7 +36,7 @@ class MysqlPdo
         $stmt = $this->dbh->prepare($sql);
         if(!empty($data)) {
             foreach ($data as $key => $val) {
-                $stmt->bindParam(':'.$key,$val);
+                $stmt->bindValue(':'.$key,$val,$this->getParamType($val));
             }
         }
         $rs = $stmt->execute();
@@ -56,7 +56,7 @@ class MysqlPdo
         $stmt = $this->dbh->prepare($sql);
         if(!empty($data)){
             foreach ($data as $key => $val){
-                $stmt->bindParam(':'.$key,$val);
+                $stmt->bindValue(':'.$key,$val,$this->getParamType($val));
             }
         }
         $rs = $stmt->execute();
@@ -72,7 +72,7 @@ class MysqlPdo
         $stmt = $this->dbh->prepare($sql);
         if(!empty($data)){
             foreach ($data as $key => $val){
-                $stmt->bindParam(':'.$key,$val);
+                $stmt->bindValue(':'.$key,$val,$this->getParamType($val));
             }
         }
         $rs = $stmt->execute();
@@ -81,6 +81,19 @@ class MysqlPdo
             return $stmt->errorInfo();
         }
         return $stmt->columnCount();
+    }
+
+    private function getParamType($val)
+    {
+        if(is_int($val)){
+            return PDO::PARAM_INT;
+        }else if(is_bool($val)){
+            return PDO::PARAM_BOOL;
+        }else if(is_null($val)){
+            return PDO::PARAM_NULL;
+        }else{
+            return PDO::PARAM_STR;
+        }
     }
 
 }

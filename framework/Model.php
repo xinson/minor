@@ -120,11 +120,11 @@ class Model
     /**
      * @param string $where
      * @param array $bind
-     * @param string $order
+     * @param string $orderStr
      * @param int $limit
      * @return array|bool
      */
-    public function getList($where = '', $bind = array(),  $order = '', $limit = 10)
+    public function getList($where = '', $bind = array(),  $orderStr = '', $limit = 10)
     {
         $whereSql = ' 1 ';
         if(!empty($where)) {
@@ -137,8 +137,10 @@ class Model
             }
         }
         $sql = " SELECT * FROM {$this->getTable()} WHERE $whereSql";
-        if(!empty($order)){
-            $sql .= " ORDER BY $order";
+        if(empty($orderStr)){
+            $sql .= " ORDER BY $this->getPrimary() DESC";
+        }else{
+            $sql .= $orderStr;
         }
         $sql .= " LIMIT  $limit";
         $array = $this->pdo->query($sql,$bind);
@@ -164,7 +166,7 @@ class Model
                 }
             }
             if(!empty($different) && is_array($different)){
-                $where = $this->getPrimary() .' = '.$this->getId();
+                $where = $this->getPrimary() .' = :'.$this->getId();
                 $fields = implode(',', $bind);
                 $sql = "UPDATE {$this->getTable()} SET $fields WHERE $where";
                 return $this->pdo->update($sql,$different);
@@ -184,7 +186,12 @@ class Model
 
     public function delete()
     {
-
+        if(!empty($this->getId())) {
+            $where = $this->getPrimary() . ' = :' . $this->getPrimary();
+            $sql = "DELETE FROM {$this->getTable()} WHERE $where";
+            $data = array($this->getPrimary() => $this->getId());
+            $this->pdo->query($sql,$data);
+        }
     }
 
     public function __set($key, $value)

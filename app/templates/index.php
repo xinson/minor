@@ -9,21 +9,6 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
 </head>
 <body>
-
-    <table border="1">
-        <tr>
-            <th>邮箱</th>
-            <th>销售内容</th>
-        </tr>
-        <?php
-        foreach($list as $d => $v){
-        ?>
-        <tr>
-            <td><?php echo $v['email'];?></td>
-            <td><?php echo $v['sell'];?></td>
-        </tr>
-            <?php
-        }?>
-    </table>
+    <?php echo $content;?>
 </body>
 </html>
