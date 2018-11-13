@@ -1,6 +1,6 @@
 # minor轻量框架
 
-minor轻量框架使用composer作自动加载，加swoole来实现php的多线程。
+minor轻量框架使用composer作自动加载。
    
 ## 需要的扩展如下:
    
