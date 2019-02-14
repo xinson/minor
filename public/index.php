@@ -9,13 +9,13 @@ require '../vendor/autoload.php';
 // 加载函数库
 require '../app/common/function.php';
 
-$app = new \Minor\Framework\Application();
+$app = new \App\Framework\Application();
 
 // 加载路由
 require '../app/common/router.php';
 
 try {
-    Minor\Framework\Router::dicpatch();
+	App\Framework\Router::dicpatch();
 }catch (\Exception $e){
 	echo $e->getMessage();exit();
 }
