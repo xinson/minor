@@ -7,12 +7,12 @@ define('PATH',dirname(__DIR__));
 require '../vendor/autoload.php';
 
 // 加载函数库
-require '../app/common/function.php';
+require '../app/Common/function.php';
 
 $app = new \Minor\Framework\Application();
 
 // 加载路由
-require '../app/common/router.php';
+require '../app/Common/router.php';
 
 try {
     Minor\Framework\Router::dicpatch();
