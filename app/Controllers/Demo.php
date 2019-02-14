@@ -7,7 +7,7 @@ use App\Models\News;
 use Minor\Framework\Db\MysqlPdo;
 
 
-class demo
+class Demo
 {
     public function index()
     {
