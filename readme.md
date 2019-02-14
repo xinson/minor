@@ -14,15 +14,15 @@ minor轻量框架使用composer作自动加载。
 
 ## 使用composer做自动加载，新添加类需执行composer update
     
-## 路由设置（文件 app\common\router.php）
+## 路由设置（文件 app\Common\router.php）
 
-    Router::get('/', 'App\Controllers\demo@index');
-    Router::get('/test.html', 'App\Controllers\demo@test');
-    Router::get('/view/(:num)', 'App\Controllers\demo@view');
+    Router::get('/', 'App\Controllers\Demo@index');
+    Router::get('/test.html', 'App\Controllers\Demo@test');
+    Router::get('/view/(:num)', 'App\Controllers\Demo@view');
     Router::get('/(:any)', function($slug) {
     	echo 'The slug is: ' . $slug;
     });
-    Router::post('/login.html', 'App\Controllers\demo@login');
+    Router::post('/login.html', 'App\Controllers\Demo@login');
     
 get/post为method请求的方式，也支持put和delete。第一个参数为请求的url,第二个参数为请求的类和方法@后面为方法。也可以在第二个参数写方法。
 
